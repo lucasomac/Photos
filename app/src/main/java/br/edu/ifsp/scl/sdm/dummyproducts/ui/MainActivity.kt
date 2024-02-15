@@ -9,8 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.ifsp.scl.sdm.dummyproducts.R
-import br.edu.ifsp.scl.sdm.dummyproducts.adapter.ProductAdapter
-import br.edu.ifsp.scl.sdm.dummyproducts.adapter.ProductImageAdapter
+import br.edu.ifsp.scl.sdm.dummyproducts.adapter.PhotoAdapter
 import br.edu.ifsp.scl.sdm.dummyproducts.databinding.ActivityMainBinding
 import br.edu.ifsp.scl.sdm.dummyproducts.model.PhotosJSONAPI
 import com.android.volley.toolbox.ImageRequest
@@ -20,8 +19,8 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
     private val productList: MutableList<Product> = mutableListOf()
-    private val productAdapter: ProductAdapter by lazy {
-        ProductAdapter(this, productList)
+    private val photoAdapter: PhotoAdapter by lazy {
+        PhotoAdapter(this, productList)
     }
     private val productImageList: MutableList<Bitmap> = mutableListOf()
     private val productImageAdapter: ProductImageAdapter by lazy {
@@ -37,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         amb.productsSp.apply {
-            adapter = productAdapter
+            adapter = photoAdapter
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
@@ -76,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     private fun retrieveProducts() = PhotosJSONAPI.ProductListRequest({ productList ->
         productList.products.also {
 
-            productAdapter.addAll(it)
+            photoAdapter.addAll(it)
         }
     }, {
         Toast.makeText(
