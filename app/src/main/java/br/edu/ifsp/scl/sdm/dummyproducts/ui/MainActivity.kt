@@ -12,13 +12,8 @@ import br.edu.ifsp.scl.sdm.dummyproducts.R
 import br.edu.ifsp.scl.sdm.dummyproducts.adapter.ProductAdapter
 import br.edu.ifsp.scl.sdm.dummyproducts.adapter.ProductImageAdapter
 import br.edu.ifsp.scl.sdm.dummyproducts.databinding.ActivityMainBinding
-import br.edu.ifsp.scl.sdm.dummyproducts.model.DummyJSONAPI
-import br.edu.ifsp.scl.sdm.dummyproducts.model.Product
-import br.edu.ifsp.scl.sdm.dummyproducts.model.ProductList
-import com.android.volley.Request
+import br.edu.ifsp.scl.sdm.dummyproducts.model.PhotosJSONAPI
 import com.android.volley.toolbox.ImageRequest
-import com.android.volley.toolbox.StringRequest
-import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
     private val amb: ActivityMainBinding by lazy {
@@ -74,11 +69,11 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(
                 this, getString(R.string.message_request_problem), Toast.LENGTH_SHORT
             ).show()
-        }).also { DummyJSONAPI.getInstance(this).addToRequestQueue(it) }
+        }).also { PhotosJSONAPI.getInstance(this).addToRequestQueue(it) }
     }
 
 
-    private fun retrieveProducts() = DummyJSONAPI.ProductListRequest({ productList ->
+    private fun retrieveProducts() = PhotosJSONAPI.ProductListRequest({ productList ->
         productList.products.also {
 
             productAdapter.addAll(it)
@@ -88,6 +83,6 @@ class MainActivity : AppCompatActivity() {
             this, getString(R.string.message_request_problem), Toast.LENGTH_SHORT
         ).show()
     }).also {
-        DummyJSONAPI.getInstance(this).addToRequestQueue(it)
+        PhotosJSONAPI.getInstance(this).addToRequestQueue(it)
     }
 }

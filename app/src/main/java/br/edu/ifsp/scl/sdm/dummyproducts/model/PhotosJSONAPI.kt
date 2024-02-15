@@ -14,15 +14,14 @@ import com.google.gson.Gson
 import java.net.HttpURLConnection.HTTP_NOT_MODIFIED
 import java.net.HttpURLConnection.HTTP_OK
 
-class DummyJSONAPI(context: Context) {
+class PhotosJSONAPI(context: Context) {
     companion object {
-        const val PRODUCTS_ENDPOINT = "https://dummyjson.com/products/"
         const val PHOTOS_ENDPOINT = "https://jsonplaceholder.typicode.com/photos"
 
         @Volatile
-        private var INSTANCE: DummyJSONAPI? = null
+        private var INSTANCE: PhotosJSONAPI? = null
         fun getInstance(context: Context) = INSTANCE ?: synchronized(this) {
-            INSTANCE ?: DummyJSONAPI(context).also {
+            INSTANCE ?: PhotosJSONAPI(context).also {
                 INSTANCE = it
             }
         }
@@ -37,13 +36,13 @@ class DummyJSONAPI(context: Context) {
     }
 
     class ProductListRequest(
-        private val responseListener: Response.Listener<ProductList>, errorListener: ErrorListener
-    ) : Request<ProductList>(GET, PRODUCTS_ENDPOINT, errorListener) {
-        override fun parseNetworkResponse(response: NetworkResponse?): Response<ProductList> =
+        private val responseListener: Response.Listener<PhotoList>, errorListener: ErrorListener
+    ) : Request<PhotoList>(GET, PHOTOS_ENDPOINT, errorListener) {
+        override fun parseNetworkResponse(response: NetworkResponse?): Response<PhotoList> =
             if (response?.statusCode == HTTP_OK || response?.statusCode == HTTP_NOT_MODIFIED) {
                 String(response.data).run {
                     Response.success(
-                        Gson().fromJson(this, ProductList::class.java),
+                        Gson().fromJson(this, PhotoList::class.java),
                         HttpHeaderParser.parseCacheHeaders(response)
                     )
                 }
@@ -51,7 +50,7 @@ class DummyJSONAPI(context: Context) {
                 Response.error(VolleyError())
             }
 
-        override fun deliverResponse(response: ProductList?) {
+        override fun deliverResponse(response: PhotoList?) {
             responseListener.onResponse(response)
         }
     }
