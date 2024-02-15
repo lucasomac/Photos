@@ -7,10 +7,10 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.ifsp.scl.sdm.dummyproducts.R
 import br.edu.ifsp.scl.sdm.dummyproducts.adapter.PhotoAdapter
 import br.edu.ifsp.scl.sdm.dummyproducts.databinding.ActivityMainBinding
+import br.edu.ifsp.scl.sdm.dummyproducts.model.PhotoList
 import br.edu.ifsp.scl.sdm.dummyproducts.model.PhotosJSONAPI
 import com.android.volley.toolbox.ImageRequest
 
@@ -18,15 +18,12 @@ class MainActivity : AppCompatActivity() {
     private val amb: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    private val productList: MutableList<Product> = mutableListOf()
+    private val photoList: PhotoList = PhotoList()
     private val photoAdapter: PhotoAdapter by lazy {
-        PhotoAdapter(this, productList)
+        PhotoAdapter(this, photoList)
     }
-    private val productImageList: MutableList<Bitmap> = mutableListOf()
-    private val productImageAdapter: ProductImageAdapter by lazy {
-        ProductImageAdapter(this, productImageList)
-    }
-
+    private var photoImage: Bitmap? = null
+    private var photoThumbnail: Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(amb.root)
@@ -35,16 +32,13 @@ class MainActivity : AppCompatActivity() {
             title = getString(R.string.app_name)
         })
 
-        amb.productsSp.apply {
+        amb.photoSp.apply {
             adapter = photoAdapter
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?, view: View?, position: Int, id: Long
                 ) {
-                    val size = productImageList.size
-                    productImageList.clear()
-                    productImageAdapter.notifyItemRangeRemoved(0, size)
-                    retrieveProductImages(productList[position])
+                    retrievePhotoImages(photoList[position])
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -53,17 +47,23 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-        amb.productImagesRv.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = productImageAdapter
+        amb.apply {
+            photoImage.setImageBitmap(this@MainActivity.photoImage)
+            photoThumbnail.setImageBitmap(this@MainActivity.photoThumbnail)
         }
-        retrieveProducts()
+        retrievePhotos()
     }
 
-    private fun retrieveProductImages(product: Product) = product.images.forEach { imageUrl ->
-        ImageRequest(imageUrl, { response ->
-            productImageList.add(response)
-            productImageAdapter.notifyItemInserted(productImageList.lastIndex)
+    private fun retrievePhotoImages(photo: PhotoList.Photo) {
+        ImageRequest(photo.url, {
+            this@MainActivity.photoImage = it
+        }, 0, 0, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888, {
+            Toast.makeText(
+                this, getString(R.string.message_request_problem), Toast.LENGTH_SHORT
+            ).show()
+        }).also { PhotosJSONAPI.getInstance(this).addToRequestQueue(it) }
+        ImageRequest(photo.thumbnailUrl, {
+            this@MainActivity.photoThumbnail = it
         }, 0, 0, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888, {
             Toast.makeText(
                 this, getString(R.string.message_request_problem), Toast.LENGTH_SHORT
@@ -72,9 +72,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun retrieveProducts() = PhotosJSONAPI.ProductListRequest({ productList ->
-        productList.products.also {
-
+    private fun retrievePhotos() = PhotosJSONAPI.PhotoListRequest({
+        it.also {
             photoAdapter.addAll(it)
         }
     }, {

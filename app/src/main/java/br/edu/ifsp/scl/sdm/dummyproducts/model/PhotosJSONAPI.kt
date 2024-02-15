@@ -35,7 +35,7 @@ class PhotosJSONAPI(context: Context) {
         requestQueue.add(request)
     }
 
-    class ProductListRequest(
+    class PhotoListRequest(
         private val responseListener: Response.Listener<PhotoList>, errorListener: ErrorListener
     ) : Request<PhotoList>(GET, PHOTOS_ENDPOINT, errorListener) {
         override fun parseNetworkResponse(response: NetworkResponse?): Response<PhotoList> =

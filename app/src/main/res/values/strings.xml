@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DummyProducts</string>
+    <string name="app_name">Photos</string>
     <string name="message_request_problem">Request Problem</string>
     <string name="message_connection_failed">Connection Failed\n</string>
     <string name="message_response_problem">Response Problem</string>
