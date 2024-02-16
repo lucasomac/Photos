@@ -47,23 +47,22 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-        amb.apply {
-            photoImage.setImageBitmap(this@MainActivity.photoImage)
-            photoThumbnail.setImageBitmap(this@MainActivity.photoThumbnail)
-        }
         retrievePhotos()
     }
 
     private fun retrievePhotoImages(photo: PhotoList.Photo) {
         ImageRequest(photo.url, {
             this@MainActivity.photoImage = it
+            amb.photoImage.setImageBitmap(this@MainActivity.photoImage)
         }, 0, 0, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888, {
             Toast.makeText(
                 this, getString(R.string.message_request_problem), Toast.LENGTH_SHORT
             ).show()
         }).also { PhotosJSONAPI.getInstance(this).addToRequestQueue(it) }
+
         ImageRequest(photo.thumbnailUrl, {
             this@MainActivity.photoThumbnail = it
+            amb.photoThumbnail.setImageBitmap(this@MainActivity.photoThumbnail)
         }, 0, 0, ImageView.ScaleType.CENTER, Bitmap.Config.ARGB_8888, {
             Toast.makeText(
                 this, getString(R.string.message_request_problem), Toast.LENGTH_SHORT

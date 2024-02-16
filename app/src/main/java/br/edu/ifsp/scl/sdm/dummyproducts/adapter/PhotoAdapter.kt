@@ -16,7 +16,8 @@ class PhotoAdapter(private val context: Context, private val photoList: PhotoLis
             .inflate(R.layout.simple_expandable_list_item_1, parent, false).apply {
                 tag = PhotoHolder(findViewById(R.id.text1))
             }
-        (photoView.tag as PhotoHolder).productTitleView.text = photoList[position].title
+        (photoView.tag as PhotoHolder).productTitleView.text =
+            photoList[position].titleCapitalized()
         return photoView
     }
 
